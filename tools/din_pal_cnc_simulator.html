@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DIN/PAL CNC Simulator – 2D</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1118;--panel:#151f2b;--line:#344657;--text:#e9f0f7;--muted:#a7b7c8;--blue:#55c7ff;--green:#72e5a1;--orange:#ffbd69;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Arial,sans-serif}header{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}h1{font-size:20px;margin:0}header p{margin:2px 0 0;color:var(--muted)}.tag{border:1px solid #41627b;color:var(--blue);border-radius:99px;padding:4px 9px}
+main{max-width:1700px;margin:auto;padding:12px;display:grid;grid-template-columns:minmax(320px,.85fr) minmax(440px,1.4fr);gap:12px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}.panel h2{font-size:14px;margin:0;padding:10px 12px;border-bottom:1px solid var(--line)}textarea{display:block;width:100%;height:390px;resize:vertical;background:#080d13;color:#d8e8f7;border:0;border-bottom:1px solid var(--line);padding:12px;font:13px/1.5 ui-monospace,Consolas,monospace;tab-size:2;outline:none}
+.controls{padding:9px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}.controls button,.controls select,.controls input:not([type=checkbox]):not([type=range]){background:#243545;color:var(--text);border:1px solid #43596c;border-radius:6px;padding:7px 9px;font:inherit}.controls button{cursor:pointer}.controls button:hover{border-color:var(--blue)}.primary{background:#075985!important;border-color:#0ea5e9!important}.controls label{display:flex;align-items:center;gap:6px;color:var(--muted)}input[type=range]{width:95px}.status{padding:9px 12px;border-top:1px solid var(--line);color:var(--muted);min-height:37px}.status.ok{color:var(--green)}.status.error{color:var(--red)}canvas{width:100%;height:490px;display:block;background:#080e15}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:9px}.stat{background:#0d151e;border:1px solid var(--line);border-radius:7px;padding:7px}.stat small{display:block;color:var(--muted)}.stat strong{font:600 14px ui-monospace,monospace}.legend{display:flex;flex-wrap:wrap;gap:12px;padding:0 12px 10px;color:var(--muted);font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.tablewrap{max-height:230px;overflow:auto}table{border-collapse:collapse;width:100%;font:12px ui-monospace,monospace}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #2a3947;white-space:nowrap}th{position:sticky;top:0;background:#202d3b;color:var(--muted)}tr.active{background:#17435b}.help{padding:12px;color:var(--muted);font-size:12px}.help b{color:var(--text)}.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:10px}.toolgrid label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:12px}.toolgrid input{width:100%;background:#0c141d;border:1px solid #3a4c5e;border-radius:5px;padding:7px;color:var(--text)}@media(max-width:950px){main{grid-template-columns:1fr}}@media(max-width:550px){.stats{grid-template-columns:repeat(2,1fr)}canvas{height:350px}}
+</style></head>
+<body>
+<header><div><h1>DIN/PAL CNC Simulator – 2D</h1><p>Fräsen und Drehen · G-Code-Simulation · einstellbarer Werkstücknullpunkt</p></div><span class="tag">Offline-HTML</span></header>
+<main>
+<section class="panel">
+<h2>NC-Programm</h2>
+<div class="controls"><label>Maschine <select id="machine"><option value="mill">Fräsen · X/Y/Z</option><option value="turn">Drehen · X/Z</option></select></label><button id="example">Beispiel laden</button><button id="check" class="primary">Prüfen / neu laden</button></div>
+<textarea id="code" spellcheck="false">%
+; Drehbeispiel: X nach oben, Z nach rechts
+N10 G21 G18 G90 G95
+N20 T0101
+N30 G0 X42 Z3
+N40 S900 M3
+N50 G1 Z0 F0.2
+N60 G1 X30 Z-10
+N70 G1 Z-35
+N80 G0 X50 Z5
+N90 M5
+N100 M30
+%</textarea>
+<div class="controls"><button id="step">Einzelschritt</button><button id="play" class="primary">▶ Start</button><button id="pause">Ⅱ Pause</button><button id="reset">↺ Reset</button><label>Tempo <input id="speed" type="range" min="1" max="100" value="40"><span id="speedv">40%</span></label></div>
+<div id="status" class="status">Bereit. Programm prüfen oder Simulation starten.</div>
+<h2>Werkstück und Nullpunkt</h2>
+<div class="toolgrid">
+<label>Nullpunkt-Offset X (mm)<input id="zeroX" type="number" step=".1" value="0"></label>
+<label>Nullpunkt-Offset Y / Z (mm)<input id="zeroY" type="number" step=".1" value="25"></label>
+<label>Werkstücklänge (mm)<input id="stockL" type="number" min="10" value="80"></label>
+<label>Werkstückbreite/Durchmesser (mm)<input id="stockD" type="number" min="10" value="50"></label>
+<label>Werkstückhöhe (mm)<input id="stockH" type="number" min="1" value="20"></label>
+<label>Werkzeugradius (mm)<input id="radius" type="number" min="0" step=".1" value="0"></label>
+</div>
+<div class="help"><b>Nullpunkt:</b> Die Offsets bestimmen, wo der programmierte Nullpunkt relativ zum Werkstück liegt. Bei Fräsen wird X/Y angezeigt, beim Drehen X/Z. Beim Drehen liegt Z0 an der rechten Stirnfläche; negative Z-Werte laufen nach links ins Werkstück. X wird als Durchmesser programmiert und in der Darstellung radial als X/2 umgesetzt. Die NC-Koordinaten bleiben separat sichtbar. Beispiel: Bei 50 mm Werkstückbreite liegt Y0 in der Mitte bei Offset Y=25; mit Offset Y=0 liegt Y0 an der unteren Kante der 2D-Darstellung.</div>
+<div class="help"><b>Hinweis:</b> Lernsimulation, kein zertifizierter DIN/PAL-Ersatz. Zyklen und Werkzeugkorrekturen sind nur teilweise umgesetzt. Keine Kollisionsprüfung oder echte Materialabtragung. Vor Maschinenbetrieb den NC-Code auf der Originalsteuerung prüfen.</div>
+</section>
+<section class="panel">
+<h2>Simulationsfenster – 2D</h2>
+<canvas id="sim" width="1000" height="650"></canvas>
+<div class="legend"><span><i class="dot" style="background:#55c7ff"></i>G1/G2/G3</span><span><i class="dot" style="background:#ffbd69"></i>G0 Eilgang</span><span><i class="dot" style="background:#72e5a1"></i>Werkzeugposition</span><span><i class="dot" style="background:#64778a"></i>Werkstück</span></div>
+<div class="stats"><div class="stat"><small>NC-Zeile</small><strong id="sline">—</strong></div><div class="stat"><small>NC X</small><strong id="sx">0.000</strong></div><div class="stat"><small>NC Y/Z</small><strong id="sy">0.000</strong></div><div class="stat"><small>Werkstück X</small><strong id="swx">0.000</strong></div><div class="stat"><small>Werkstück Y/Z</small><strong id="swy">25.000</strong></div><div class="stat"><small>Vorschub F</small><strong id="sf">—</strong></div></div>
+<h2>Programmlauf und Modalzustände</h2><div class="tablewrap"><table><thead><tr><th>Zeile</th><th>Code</th><th>Aktion</th></tr></thead><tbody id="rows"></tbody></table></div><div id="modal" class="help">G0 · G17 · G90 · G21 · Spindel aus</div>
+</section></main>
+<script>
+(()=> {
+const $=id=>document.getElementById(id),canvas=$('sim'),ctx=canvas.getContext('2d');
+let blocks=[],index=0,pos={x:0,y:0,z:0},segments=[],running=false,timer=null,view= 'mill';
+let modal={motion:'G0',plane:'G17',abs:true,unit:1,feed:null,spindle:0,tool:1,cycle:null};
+const fmt=n=>Number.isFinite(n)?n.toFixed(3):'—';
+function stop(){running=false;if(timer)clearTimeout(timer);timer=null;$('play').textContent='▶ Start'}
+function setStatus(t,c=''){$('status').textContent=t;$('status').className='status '+c}
+function parse(){
+ stop();blocks=[];segments=[];index=0;pos={x:0,y:0,z:0};modal={motion:'G0',plane:view==='turn'?'G18':'G17',abs:true,unit:1,feed:null,spindle:0,tool:1,cycle:null};
+ $('code').value.split(/\r?\n/).forEach((raw,n)=>{let clean=raw.replace(/\([^)]*\)/g,'').split(';')[0].trim();if(!clean||clean==='%'||clean.startsWith('%'))return;let ms=[...clean.matchAll(/([A-Z])\s*([+-]?(?:\d+\.?\d*|\.\d+))/gi)];if(!ms.length)return;let b={line:n+1,raw:raw.trim(),w:{},g:[],m:[]};for(const m of ms){let k=m[1].toUpperCase(),v=+m[2];if(k==='G')b.g.push(v);else if(k==='M')b.m.push(v);else b.w[k]=v}blocks.push(b)});
+ $('rows').innerHTML=blocks.map((b,i)=>`<tr data-i="${i}"><td>${b.line}</td><td>${[...b.g.map(n=>'G'+n),...b.m.map(n=>'M'+n)].join(' ')||'—'}</td><td>${b.raw.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</td></tr>`).join('');
+ setStatus(`Programm geladen: ${blocks.length} NC-Blöcke.`,'ok');draw();updateStats();
+}
+function target(w){let t={...pos};for(const a of ['X','Y','Z'])if(w[a]!==undefined){let v=w[a]*modal.unit;t[a.toLowerCase()]=modal.abs?v:pos[a.toLowerCase()]+v}return t}
+function line(a,b,type,n){if(Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z)>1e-8)segments.push({a:{...a},b:{...b},type,line:n})}
+function arc(a,b,w,type,n){
+ const axis2=modal.plane==='G18'?'z':'y',off=modal.plane==='G18'?(w.K||0):(w.J||0),cx=a.x+(w.I||0)*modal.unit,cy=a[axis2]+off*modal.unit,r=Math.hypot(a.x-cx,a[axis2]-cy);
+ if(!r){line(a,b,'G1',n);return}
+ let a0=Math.atan2(a[axis2]-cy,a.x-cx),a1=Math.atan2(b[axis2]-cy,b.x-cx);
+ if(type==='G2'){while(a1>=a0)a1-=2*Math.PI}else{while(a1<=a0)a1+=2*Math.PI}
+ let sweep=a1-a0,steps=Math.max(12,Math.ceil(Math.abs(sweep)*r/2)),prev={...a};
+ for(let j=1;j<=steps;j++){let ang=a0+sweep*j/steps,q={...a,x:cx+r*Math.cos(ang)};q[axis2]=cy+r*Math.sin(ang);if(j===steps)q={...b};line(prev,q,type,n);prev=q}
+}
+function runBlock(b){
+ let w=b.w,desc=[];
+ for(const n of b.g){if([0,1,2,3].includes(n))modal.motion='G'+n;if([17,18,19].includes(n))modal.plane='G'+n;if(n===20)modal.unit=25.4;if(n===21)modal.unit=1;if(n===90)modal.abs=true;if(n===91)modal.abs=false;if([81,82,83].includes(n)){modal.cycle=n;desc.push(`G${n}-Bohrzyklus (vereinfacht)`)}if(n===80){modal.cycle=null;desc.push('G80 Zyklus aufgehoben')}if([40,41,42,43,44,49].includes(n))desc.push(`Werkzeugkorrektur G${n} erkannt (nicht vollständig verrechnet)`)}
+ if(w.F!==undefined)modal.feed=w.F*modal.unit;if(w.S!==undefined)modal.spindle=w.S;if(w.T!==undefined){modal.tool=w.T;desc.push('Werkzeug T'+w.T)}
+ if(b.m.includes(3)||b.m.includes(4))desc.push('Spindel ein');if(b.m.includes(5)){modal.spindle=0;desc.push('Spindel aus')}if(b.m.includes(6))desc.push('Werkzeugwechsel');
+ let start={...pos},end=target(w),moving=['X','Y','Z'].some(a=>w[a]!==undefined);
+ if(moving){
+  if(modal.cycle&&[81,82,83].includes(modal.cycle)){
+   if(view==='turn'){let r={...end},d={...end};r.x=(w.R??0)*modal.unit;d.x=(w.X??end.x)*modal.unit;line(start,r,'G0',b.line);line(r,d,'G1',b.line);line(d,r,'G0',b.line);pos=r}
+   else {let r={...end},d={...end};r.z=(w.R??0)*modal.unit;d.z=(w.Z??end.z)*modal.unit;line(start,r,'G0',b.line);line(r,d,'G1',b.line);line(d,r,'G0',b.line);pos=r}
+   desc.push(`Bohrzyklus G${modal.cycle}`);
+  }else {if(modal.motion==='G2'||modal.motion==='G3')arc(start,end,w,modal.motion,b.line);else line(start,end,modal.motion,b.line);pos=end;desc.push(`${modal.motion} → X${fmt(pos.x)} ${view==='turn'?'Z':'Y'}${fmt(view==='turn'?pos.z:pos.y)}`)}
+ }
+ if(!desc.length)desc.push(b.m.length?'M'+b.m.join(' M'):'Modal-/Parameterzeile');
+ return desc.join(' · ')
+}
+function updateStats(){
+ $('sx').textContent=fmt(pos.x);$('sy').textContent=fmt(view==='turn'?pos.z:pos.y);
+ $('swx').textContent=fmt(pos.x+(+$('zeroX').value||0));
+ $('swy').textContent=fmt((view==='turn'?pos.z:pos.y)+(+$('zeroY').value||0));
+ $('sf').textContent=modal.feed===null?'—':fmt(modal.feed);
+ $('modal').textContent=`${modal.motion} · ${modal.plane} · G${modal.abs?90:91} · G${modal.unit===1?21:20} · F ${modal.feed===null?'—':fmt(modal.feed)} · S ${modal.spindle} · T${modal.tool} · Zyklus ${modal.cycle?'G'+modal.cycle:'aus'}`;
+}
+function step(){if(index>=blocks.length){stop();setStatus('Programmende erreicht.','ok');return false}let i=index++,b=blocks[i],desc=runBlock(b),tr=$('rows').querySelector(`tr[data-i="${i}"]`);if(tr){tr.classList.add('active');tr.cells[2].textContent=desc}$('sline').textContent=b.line;updateStats();setStatus(`Zeile ${b.line}: ${desc}`,'ok');draw();if(b.m.includes(30)){stop();setStatus(`M30: Programmende nach Zeile ${b.line}.`,'ok');return false}return true}
+function play(){if(running)return;if(!blocks.length||index>=blocks.length)parse();running=true;$('play').textContent='▶ Läuft…';tick()}
+function tick(){if(!running)return;if(!step()){stop();return}timer=setTimeout(tick,Math.max(35,800-(+$('speed').value)*7))}
+function draw(){
+ let W=canvas.width,H=canvas.height,turn=view==='turn',zx=+$('zeroX').value||0,zy=+$('zeroY').value||0;
+ ctx.clearRect(0,0,W,H);
+ let L=+$('stockL').value||80,D=+$('stockD').value||50;
+ // Fräsen: NC X/Y direkt. Drehen: Z0 liegt an der rechten Stirnfläche,
+ // Z- läuft nach links in das Werkstück; X ist Durchmesser und wird als X/2 radial dargestellt.
+ const get=p=>turn?({x:L+(p.z+zy),y:(p.x+zx)/2}):({x:p.x+zx,y:p.y+zy});
+ let all=[get(pos),{x:0,y:0},{x:L,y:turn?D/2:D}];for(let s of segments)all.push(get(s.a),get(s.b));
+ let minX,maxX,minY,maxY;
+ if(turn){minX=Math.min(-5,...all.map(p=>p.x));maxX=Math.max(L+5,...all.map(p=>p.x));minY=Math.min(-D*.15,...all.map(p=>p.y));maxY=Math.max(D/2+5,...all.map(p=>p.y));}
+ else {minX=Math.min(-5,...all.map(p=>p.x));maxX=Math.max(L+5,...all.map(p=>p.x));minY=Math.min(-5,...all.map(p=>p.y));maxY=Math.max(D+5,...all.map(p=>p.y));}
+ let dx=maxX-minX||1,dy=maxY-minY||1,pad=55,sc=Math.min((W-2*pad)/dx,(H-2*pad)/dy),ox=(W-dx*sc)/2-minX*sc,oy=(H-dy*sc)/2+maxY*sc,P=p=>({x:ox+p.x*sc,y:oy-p.y*sc});
+ ctx.fillStyle='#0b1118';ctx.fillRect(0,0,W,H);ctx.font='12px monospace';ctx.strokeStyle='#1d2a37';ctx.fillStyle='#7e92a7';let grid=Math.pow(10,Math.floor(Math.log10(Math.max(dx,dy)/8)));if(!isFinite(grid)||grid===0)grid=10;
+ for(let x=Math.ceil(minX/grid)*grid;x<=maxX;x+=grid){let a=P({x,y:minY}),b=P({x,y:maxY});ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.fillText(String(+x.toFixed(2)),a.x+3,H-18)}
+ for(let y=Math.ceil(minY/grid)*grid;y<=maxY;y+=grid){let a=P({x:minX,y}),b=P({x:maxX,y});ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.fillText(String(+y.toFixed(2)),5,a.y-3)}
+ if($('showStock')?.checked!==false){
+  ctx.strokeStyle='#64778a';ctx.setLineDash([6,5]);
+  if(turn){
+   // Stock extends left from Z0 at the right end; X is shown as diameter around the centerline.
+   let a=P({x:0,y:-D/2}),b=P({x:L,y:D/2});
+   ctx.strokeRect(a.x,b.y,b.x-a.x,a.y-b.y);
+   let mid=P({x:0,y:0}),right=P({x:L,y:0});ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(mid.x,mid.y);ctx.lineTo(right.x,right.y);ctx.stroke();
+  } else {let a=P({x:0,y:0}),b=P({x:L,y:D});ctx.strokeRect(a.x,b.y,b.x-a.x,a.y-b.y);}
+  ctx.setLineDash([]);
+ }
+ for(const s of segments){let a=P(get(s.a)),b=P(get(s.b));ctx.strokeStyle=s.type==='G0'?'#ffbd69':'#55c7ff';ctx.lineWidth=s.type==='G0'?1.5:2.7;ctx.setLineDash(s.type==='G0'?[7,5]:[]);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+ ctx.setLineDash([]);let p=P(get(pos));ctx.fillStyle='#72e5a1';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d7ffe6';ctx.beginPath();ctx.moveTo(p.x-12,p.y);ctx.lineTo(p.x+12,p.y);ctx.moveTo(p.x,p.y-12);ctx.lineTo(p.x,p.y+12);ctx.stroke();
+ ctx.fillStyle='#dceaf8';ctx.font='bold 14px system-ui';ctx.fillText(turn?'DREHEN · X = Durchmesser · Z0 rechts · Z− ins Werkstück':'FRÄSEN · X/Y',15,24);
+ // Axis arrows: turning origin is at the right face (Z0) and centerline (X0).
+ if(turn){let oxp=P({x:L,y:0});ctx.strokeStyle='#72e5a1';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(oxp.x,oxp.y);ctx.lineTo(Math.min(W-35,oxp.x+75),oxp.y);ctx.lineTo(oxp.x+65,oxp.y-5);ctx.moveTo(Math.min(W-35,oxp.x+75),oxp.y);ctx.lineTo(oxp.x+65,oxp.y+5);ctx.moveTo(oxp.x,oxp.y);ctx.lineTo(oxp.x,Math.max(35,oxp.y-75));ctx.lineTo(oxp.x-5,oxp.y-65);ctx.moveTo(oxp.x,Math.max(35,oxp.y-75));ctx.lineTo(oxp.x+5,oxp.y-65);ctx.stroke();ctx.fillStyle='#72e5a1';ctx.fillText('Z+',oxp.x+78,oxp.y+4);ctx.fillText('X+',oxp.x+7,Math.max(30,oxp.y-78))}
+}
+const millExample = `%\n; Fräsbeispiel mit Kreis und Bohrzyklus\nN10 G21 G17 G90 G94\nN20 T1 M6\nN30 G0 X10 Y10 Z5\nN40 S1800 M3\nN50 G1 Z-2 F120\nN60 G1 X50 Y10 F300\nN70 G1 X50 Y35\nN80 G2 X35 Y50 I-15 J0\nN90 G1 X10 Y50\nN100 G3 X10 Y10 I0 J-20\nN110 G0 Z5\nN120 G81 X25 Y25 Z-5 R2 F100\nN130 G80\nN140 M5\nN150 M30\n%`;
+const turnExample = `%\n; Drehbeispiel: X nach oben, Z nach rechts\nN10 G21 G18 G90 G95\nN20 T0101\nN30 G0 X42 Z3\nN40 S900 M3\nN50 G1 Z0 F0.2\nN60 G1 X30 Z-10\nN70 G1 Z-35\nN80 G0 X50 Z5\nN90 M5\nN100 M30\n%`;
+$('check').onclick=parse;$('example').onclick=()=>{$('code').value=view==='turn'?turnExample:millExample;parse()};
+$('machine').onchange=()=>{view=$('machine').value; $('code').value=view==='turn'?turnExample:millExample;parse()};
+$('step').onclick=()=>{stop();if(!blocks.length)parse();step()};$('play').onclick=play;$('pause').onclick=stop;$('reset').onclick=()=>{parse();$('sline').textContent='—';updateStats()};
+$('speed').oninput=()=> $('speedv').textContent=$('speed').value+'%';
+['zeroX','zeroY','stockL','stockD','stockH','radius'].forEach(id=>$(id).addEventListener('input',()=>{updateStats();draw()}));
+parse();
+})();
+</script></body></html>
