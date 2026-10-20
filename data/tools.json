@@ -1,0 +1,76 @@
+{
+  "tools": [
+    {
+      "id": "rechner",
+      "name": "Rechner",
+      "description": "Schnelle Berechnungen direkt im Browser.",
+      "category": "Produktivität",
+      "icon": "∑",
+      "path": "tools/rechner.html",
+      "tags": [
+        "mathe",
+        "zahlen"
+      ]
+    },
+    {
+      "id": "json",
+      "name": "JSON Formatter",
+      "description": "JSON formatieren und auf Syntaxfehler prüfen.",
+      "category": "Informatik",
+      "icon": "{ }",
+      "path": "tools/json-formatter.html",
+      "tags": [
+        "json",
+        "code"
+      ]
+    },
+    {
+      "id": "wortzaehler",
+      "name": "Wortzähler",
+      "description": "Wörter, Zeichen und Absätze zählen.",
+      "category": "Sprache",
+      "icon": "Aa",
+      "path": "tools/wortzaehler.html",
+      "tags": [
+        "text",
+        "wörter"
+      ]
+    },
+    {
+      "id": "farbpalette",
+      "name": "Farbpalette",
+      "description": "Farben auswählen und Farbwerte kopieren.",
+      "category": "Gestaltung",
+      "icon": "◉",
+      "path": "tools/farbpalette.html",
+      "tags": [
+        "farbe",
+        "design"
+      ]
+    },
+    {
+      "id": "htmlvorschau",
+      "name": "HTML Vorschau",
+      "description": "HTML-Snippets in einer Vorschau testen.",
+      "category": "Informatik",
+      "icon": "</>",
+      "path": "tools/html-vorschau.html",
+      "tags": [
+        "html",
+        "code"
+      ]
+    },
+    {
+      "id": "einheiten",
+      "name": "Einheiten-Konverter",
+      "description": "Einheiten und Größen umrechnen.",
+      "category": "Mathematik",
+      "icon": "⇄",
+      "path": "tools/einheiten.html",
+      "tags": [
+        "umrechnen",
+        "mathe"
+      ]
+    }
+  ]
+}

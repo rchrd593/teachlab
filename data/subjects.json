@@ -1,0 +1,49 @@
+{
+  "subjects": [
+    {
+      "id": "mathe-7",
+      "name": "Mathematik · Klasse 7",
+      "subject": "Mathematik",
+      "class": "Klasse 7",
+      "description": "Beispielbereich für Themen, Tools und Materialien.",
+      "icon": "∑",
+      "color": "#a99aff",
+      "tools": [
+        "rechner",
+        "einheiten"
+      ],
+      "materials": [
+        "arbeitsblatt-demo"
+      ]
+    },
+    {
+      "id": "deutsch-8",
+      "name": "Deutsch · Klasse 8",
+      "subject": "Deutsch",
+      "class": "Klasse 8",
+      "description": "Beispielbereich für Sprache, Schreiben und Leseaufgaben.",
+      "icon": "Aa",
+      "color": "#edbf7a",
+      "tools": [
+        "wortzaehler"
+      ],
+      "materials": [
+        "quellen-demo"
+      ]
+    },
+    {
+      "id": "informatik",
+      "name": "Informatik",
+      "subject": "Informatik",
+      "class": "Mehrere Klassen",
+      "description": "Code, Datenformate und digitale Kompetenzen.",
+      "icon": "</>",
+      "color": "#7cc7eb",
+      "tools": [
+        "json",
+        "htmlvorschau"
+      ],
+      "materials": []
+    }
+  ]
+}

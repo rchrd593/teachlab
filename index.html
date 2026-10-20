@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b0e15">
+  <meta name="description" content="Classroom Hub — Tools, Materialien und Unterrichtshelfer an einem Ort.">
+  <title>Classroom Hub — Dein digitaler Unterrichtsraum</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#home" aria-label="Classroom Hub Startseite">
+        <span class="brand-logo">✳</span><span class="brand-name">classroom<span>hub</span><small>DEIN DIGITALER UNTERRICHTSRAUM</small></span>
+      </a>
+      <button class="icon-btn mobile-close" id="closeNav" aria-label="Menü schließen">×</button>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav" aria-label="Hauptnavigation">
+        <button class="nav-link active" data-page="home"><span>▦</span> Übersicht</button>
+        <button class="nav-link" data-page="tools"><span>⌘</span> HTML-Tools <b id="toolsNavCount">0</b></button>
+        <button class="nav-link" data-page="materials"><span>▤</span> Materialien & PDFs</button>
+        <button class="nav-link" data-page="live"><span>◷</span> Live-Unterricht</button>
+        <button class="nav-link" data-page="planner"><span>☷</span> Unterrichtsplanung</button>
+        <button class="nav-link" data-page="exercises"><span>✎</span> Interaktive Übungen</button>
+      </nav>
+      <div class="nav-label subject-label">FÄCHER & KLASSEN</div>
+      <nav class="nav" id="subjectNav" aria-label="Fächer und Klassen"></nav>
+      <div class="sidebar-bottom"><span class="pulse"></span><div><strong>Dein Unterrichtsraum</strong><small>Organisiert. Übersichtlich. Flexibel.</small></div></div>
+    </aside>
+    <div class="scrim hidden" id="scrim"></div>
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="openNav" aria-label="Menü öffnen">☰</button>
+        <div class="crumb"><span>Workspace</span><i>/</i><strong id="breadcrumb">Übersicht</strong></div>
+        <div class="top-actions"><span class="local-label"><i></i> Lokaler Prototyp</span><button class="user-chip" id="aboutBtn" aria-label="Informationen">CH</button></div>
+      </header>
+      <section class="page">
+        <section class="hero" id="hero">
+          <div class="hero-copy">
+            <div class="eyebrow"><span></span> DEIN DIGITALER UNTERRICHTSRAUM</div>
+            <h1>Guter Unterricht.<br><em>Ein zentraler Ort.</em></h1>
+            <p>Tools, Materialien, Planung und interaktive Helfer – für deine Vorbereitung und den Unterricht mit deiner Klasse.</p>
+            <button class="primary-btn" data-go="tools">Tools entdecken <span>↗</span></button>
+          </div>
+          <div class="hero-graphic" aria-hidden="true"><div class="ring ring-a"></div><div class="ring ring-b"></div><div class="orb">✳</div><div class="float-card float-one">Aa</div><div class="float-card float-two">◷</div><div class="float-card float-three">▤</div></div>
+        </section>
+
+        <div class="search-row">
+          <label class="search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Tools, Materialien oder Fächer suchen…" aria-label="Website durchsuchen"><kbd>Ctrl K</kbd></label>
+          <span class="hint">Dein Unterricht auf einen Blick</span>
+        </div>
+
+        <section class="section-block" id="overviewSection">
+          <div class="section-head"><div><h2 id="pageTitle">Dein Workspace</h2><p id="pageSubtitle">Wähle einen Bereich und leg los.</p></div><span class="tiny-tag" id="pageCount">STARTSEITE</span></div>
+          <div id="pageContent"></div>
+        </section>
+        <footer><span>CLASSROOM HUB <i>•</i> DEIN DIGITALER UNTERRICHTSRAUM</span><span>Statischer Prototyp · Daten bleiben lokal im Browser</span></footer>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="aboutDialog" class="dialog">
+    <form method="dialog"><button class="dialog-x" aria-label="Schließen">×</button></form>
+    <div class="brand-logo">✳</div><h2>Classroom Hub</h2>
+    <p>Eine erweiterbare Unterrichtswebsite für Tools, Materialien, Planung und interaktive Unterrichtshelfer.</p>
+    <div class="notice"><strong>Wichtig zum Datenschutz</strong><br>Dies ist eine statische erste Version ohne Anmeldung. Sie schützt keine Inhalte. Veröffentliche hier keine personenbezogenen Schülerdaten oder vertraulichen Materialien.</div>
+    <form method="dialog"><button class="primary-btn">Verstanden</button></form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

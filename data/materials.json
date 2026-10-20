@@ -1,0 +1,22 @@
+{
+  "materials": [
+    {
+      "id": "arbeitsblatt-demo",
+      "title": "Beispiel-Arbeitsblatt",
+      "description": "Ersetze diesen Eintrag durch einen Link auf ein eigenes PDF oder Arbeitsblatt.",
+      "subject": "Fächerübergreifend",
+      "type": "Arbeitsblatt",
+      "path": "materials/beispiel-arbeitsblatt.pdf",
+      "access": "public"
+    },
+    {
+      "id": "quellen-demo",
+      "title": "Nützliche Lernressourcen",
+      "description": "Sammlung externer Lernlinks – ergänze hier geprüfte Quellen.",
+      "subject": "Fächerübergreifend",
+      "type": "Linksammlung",
+      "url": "https://www.lehrer-online.de/",
+      "access": "public"
+    }
+  ]
+}
