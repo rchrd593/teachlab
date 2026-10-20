@@ -1,76 +1,29 @@
 {
   "tools": [
     {
-      "id": "rechner",
-      "name": "Rechner",
-      "description": "Schnelle Berechnungen direkt im Browser.",
-      "category": "Produktivität",
-      "icon": "∑",
-      "path": "tools/rechner.html",
-      "tags": [
-        "mathe",
-        "zahlen"
-      ]
-    },
-    {
-      "id": "json",
-      "name": "JSON Formatter",
-      "description": "JSON formatieren und auf Syntaxfehler prüfen.",
+      "id": "spanformen-labor",
+      "name": "Spanformen-Labor",
+      "description": "Interaktives Labor zu Spanformen.",
       "category": "Informatik",
-      "icon": "{ }",
-      "path": "tools/json-formatter.html",
-      "tags": [
-        "json",
-        "code"
-      ]
+      "icon": "⚙",
+      "path": "tools/spanformen_labor.html",
+      "tags": ["spanformen", "cnc", "fertigung"]
     },
     {
-      "id": "wortzaehler",
-      "name": "Wortzähler",
-      "description": "Wörter, Zeichen und Absätze zählen.",
-      "category": "Sprache",
-      "icon": "Aa",
-      "path": "tools/wortzaehler.html",
-      "tags": [
-        "text",
-        "wörter"
-      ]
-    },
-    {
-      "id": "farbpalette",
-      "name": "Farbpalette",
-      "description": "Farben auswählen und Farbwerte kopieren.",
-      "category": "Gestaltung",
-      "icon": "◉",
-      "path": "tools/farbpalette.html",
-      "tags": [
-        "farbe",
-        "design"
-      ]
-    },
-    {
-      "id": "htmlvorschau",
-      "name": "HTML Vorschau",
-      "description": "HTML-Snippets in einer Vorschau testen.",
-      "category": "Informatik",
-      "icon": "</>",
-      "path": "tools/html-vorschau.html",
-      "tags": [
-        "html",
-        "code"
-      ]
-    },
-    {
-      "id": "einheiten",
-      "name": "Einheiten-Konverter",
-      "description": "Einheiten und Größen umrechnen.",
+      "id": "drehzahl-vorschub-trainer",
+      "name": "Drehzahl-Vorschub-Trainer",
+      "description": "Trainer für Drehzahl und Vorschub.",
       "category": "Mathematik",
-      "icon": "⇄",
-      "path": "tools/einheiten.html",
-      "tags": [
-        "umrechnen",
-        "mathe"
-      ]
+      "icon": "↻",
+      "path": "tools/drehzahl_vorschub_trainer.html",
+      "tags": ["drehzahl", "vorschub", "cnc"]
+    },
+    {
+      "id": "din-pal-cnc-simulator",
+      "name": "DIN/PAL CNC-Simulator",
+      "description": "Simulator für DIN/PAL-CNC-Programme.",
+      "category": "Informatik",
+      "icon": "⌘",
+      "path": "tools/din_pal_cnc_simulator.html",
+      "tags": ["cnc", "din", "pal", "programmierung"]
     }
-  ]
-}
